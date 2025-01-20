@@ -1,5 +1,6 @@
 import { convertWebMToMP3 } from "../services/audioService.js";
 import { transcribeAudio } from "../services/openAIService.js";
+// il middleware upload.single("file") mi fa trovare i dati del file caricato dentro a req.file
 export const transcribe = async (req, res) => {
     try {
         if (!req.file) {
@@ -15,12 +16,11 @@ export const transcribe = async (req, res) => {
             });
         }
         const inputPath = req.file.path;
-        const outputPath = `${inputPath}.mp3`; 
+        const outputPath = `${inputPath}.mp3`;
         // Conversione del file WebM in MP3
         await convertWebMToMP3(inputPath, outputPath);
         // Trascrizione dell'audio
         const transcription = await transcribeAudio(outputPath, process.env.OPENAI_API_KEY);
-
         if (transcription && transcription.text) {
             return res.status(200).send({
                 success: true,
